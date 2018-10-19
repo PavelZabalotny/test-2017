@@ -1,11 +1,11 @@
 import React from 'react';
 
-export default function SearchRequest ({date, text}) {
+export default function SearchHistory ({date, text}) {
     return (
-        <div>
+        <li>
             <div>{date}</div>
             <div>{text}</div>
-        </div>
+        </li>
 
     )
 }
