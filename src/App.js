@@ -28,11 +28,11 @@ class App extends Component {
         return (
             <div>
                 {/*добавление истории поиска*/}
-                <SearchForm />
+                <SearchForm add={this.handleSubmitSearchString}/>
                 <ul>
                     {
                         this.state.search.map(item => {
-                            return <SearchHistory key={item.id} date={this.getDate()} text={item.text}/>
+                            return <SearchHistory key={item.id} id={item.id} date={this.getDate()} text={item.text}/>
                         })
                     }
                 </ul>
@@ -40,7 +40,20 @@ class App extends Component {
         );
     }
 
-    getDate = function(){
+    handleSubmitSearchString = (text) => {
+        const prevState = this.state.search;
+        prevState.push({
+            id: prevState.length + 1,
+            date: this.getDate(),
+            text,
+        });
+
+        this.setState({
+            search: prevState,
+            })
+    };
+
+    getDate = () => {
         const date = new Date();
         return `${this.formatDate(date.getDate())}/${this.formatDate(date.getMonth(), true)}/${this.formatDate(date.getFullYear())} ${this.formatDate(date.getHours())}:${this.formatDate(date.getMinutes())}`
     };
