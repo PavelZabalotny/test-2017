@@ -8,17 +8,17 @@ class App extends Component {
             [
                 {
                     id: 1,
-                    date: '10/02/2018 13:00',
+                    date: new Date(),
                     text: 'сообщение 1'
                 },
                 {
                     id: 2,
-                    date: '09/02/2018 11:00',
+                    date: new Date(),
                     text: 'сообщение 2'
                 },
                 {
                     id: 3,
-                    date: '09/02/2018 09:38',
+                    date: new Date(),
                     text: 'сообщение 3'
                 },
             ]
@@ -29,41 +29,66 @@ class App extends Component {
             <div>
                 {/*добавление истории поиска*/}
                 <SearchForm add={this.handleSubmitSearchString}/>
+                <div>Search history {this.state.search.length} request(s)</div>
                 <ul>
                     {
-                        this.state.search.map(item => {
-                            return <SearchHistory key={item.id} id={item.id} date={this.getDate()} text={item.text}/>
-                        })
+                        this.state.search
+                            .sort((a, b) => b.date - a.date)
+                            .map(item => {
+                                return <SearchHistory
+                                    key={item.id}
+                                    id={item.id}
+                                    date={this.getHistoryDate(item.date)}
+                                    text={item.text}
+                                    deleteSearchHistory={this.handleDeleteSearchHistory}
+                                />
+                            })
                     }
                 </ul>
             </div>
         );
     }
 
+    handleDeleteSearchHistory = (id) => {
+        const index = this.state.search.findIndex(item => item.id === id);
+        const prevState = this.state.search;
+        prevState.splice(index, 1);
+
+        this.setState({
+            search: prevState,
+        })
+    };
+
     handleSubmitSearchString = (text) => {
         const prevState = this.state.search;
         prevState.push({
             id: prevState.length + 1,
-            date: this.getDate(),
+            date: this.setHistoryDate(),
             text,
         });
 
         this.setState({
             search: prevState,
-            })
+        })
     };
 
-    getDate = () => {
-        const date = new Date();
-        return `${this.formatDate(date.getDate())}/${this.formatDate(date.getMonth(), true)}/${this.formatDate(date.getFullYear())} ${this.formatDate(date.getHours())}:${this.formatDate(date.getMinutes())}`
+    setHistoryDate = () => new Date();
+
+    getHistoryDate = (date) => {
+        const day = this.formatDate(date.getDate());
+        const month = this.formatDate(date.getMonth(), true);
+        const year = this.formatDate(date.getFullYear());
+        const hours = this.formatDate(date.getHours());
+        const minutes = this.formatDate(date.getMinutes());
+        return `${day}/${month}/${year} ${hours}:${minutes}`
     };
 
     formatDate = (date, m = undefined) => {
         const d = m ? String(date + 1) : String(date);
         return (
             d.length > 1 ?
-            (d) :
-            `0${d}`
+                (d) :
+                `0${d}`
         )
     }
 }

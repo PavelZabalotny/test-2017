@@ -1,6 +1,6 @@
 import React from "react";
 
-
+// компонент отвечает за добавление запроса
 export default class SearchForm extends React.Component {
     state = {
         text: '',
