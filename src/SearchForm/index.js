@@ -28,12 +28,17 @@ export default class SearchForm extends React.Component {
                 <button
                     type="submit"
                     className="btn btn-primary mb-2"
-                    onClick={this.writeRequest}>Add search string</button>
+                    onClick={this.writeRequest}
+                    disabled={this.validate()}
+                >Add search string
+                </button>
             </form>
         )
     }
 
-    writeRequest = (e) => {
+    validate = () => !(this.state.text.trim().length > 0 && this.state.text.trim().length < 101);
+
+    writeRequest = e => {
         e.preventDefault(); //отменяет обновление при добавлении поискового запроса
         this.props.add(this.state.text);
 
@@ -42,9 +47,7 @@ export default class SearchForm extends React.Component {
         });
     };
 
-    handleChangeRequest = (e) => {
-
-        //(value.length && value.length > 1 && value.length < 100)
+    handleChangeRequest = e => {
         this.setState({
             text: e.target.value,
         })

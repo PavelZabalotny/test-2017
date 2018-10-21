@@ -1,37 +1,61 @@
 import React, {Component} from 'react';
-import SearchHistory from './SearchHistory'
-import SearchForm from './SearchForm'
+import SearchHistory from './SearchHistory';
+import SearchForm from './SearchForm';
+import {DB_CONFIG} from './Config/config';
+import firebase from 'firebase/app';
+import 'firebase/database';
 
 class App extends Component {
-    state = {
-        search:
-            [
-                {
-                    id: 1,
-                    date: new Date(),
-                    text: 'сообщение 1'
-                },
-                {
-                    id: 2,
-                    date: new Date(),
-                    text: 'сообщение 2'
-                },
-                {
-                    id: 3,
-                    date: new Date(),
-                    text: 'сообщение 3'
-                },
-            ]
-    };
+    constructor() {
+        super();
+
+        this.app = firebase.initializeApp(DB_CONFIG);
+        this.database = this.app.database().ref('search');//.child('search');
+
+        this.state = {
+            search: []
+        }
+    }
+
+    componentDidMount() {
+        this.database.on('value', snap => {
+            const items = snap.val();
+
+            if (items) {
+                const prevState = [];
+                const keys = Object.keys(items);
+
+                for (const key of keys) {
+                    prevState.push({
+                        id: key,
+                        date: items[key].date,
+                        text: items[key].text,
+                    });
+                }
+
+                this.setState({
+                    search: prevState,
+                });
+            } else {
+                // при удалении последнего элемента из FB, в state будет записываться пустой массив
+                // иначе при удалении последнего элемента из FB, он остается в state  и отображается
+                this.setState({
+                    search: []
+                });
+            }
+        });
+
+    }
 
     render() {
+        const connecting = !!this.state.search.length;
         return (
-            <div>
+            <div className='container'>
                 {/*добавление истории поиска*/}
                 <SearchForm add={this.handleSubmitSearchString}/>
                 <div>Search history {this.state.search.length} request(s)</div>
                 <ul>
-                    {
+                    {connecting ?
                         this.state.search
                             .sort((a, b) => b.date - a.date)
                             .map(item => {
@@ -42,39 +66,29 @@ class App extends Component {
                                     text={item.text}
                                     deleteSearchHistory={this.handleDeleteSearchHistory}
                                 />
-                            })
-                    }
+                            }) :
+                        'Connecting to Firebase database, please wait ...'}
                 </ul>
             </div>
         );
     }
 
     handleDeleteSearchHistory = (id) => {
-        const index = this.state.search.findIndex(item => item.id === id);
-        const prevState = this.state.search;
-        prevState.splice(index, 1);
-
-        this.setState({
-            search: prevState,
-        })
+        const itemRef = firebase.database().ref(`/search/${id}`);
+        itemRef.remove();
     };
 
     handleSubmitSearchString = (text) => {
-        const prevState = this.state.search;
-        prevState.push({
-            id: prevState.length + 1,
+        this.database.push().set({
             date: this.setHistoryDate(),
-            text,
-        });
-
-        this.setState({
-            search: prevState,
+            text
         })
     };
 
-    setHistoryDate = () => new Date();
+    setHistoryDate = () => Date.now();
 
-    getHistoryDate = (date) => {
+    getHistoryDate = (timestamp) => {
+        const date = new Date(timestamp);
         const day = this.formatDate(date.getDate());
         const month = this.formatDate(date.getMonth(), true);
         const year = this.formatDate(date.getFullYear());
