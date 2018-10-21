@@ -50,10 +50,10 @@ class App extends Component {
     render() {
         const connecting = !!this.state.search.length;
         return (
-            <div className='container'>
+            <div className='container mt-5'>
                 {/*добавление истории поиска*/}
                 <SearchForm add={this.handleSubmitSearchString}/>
-                <div>Search history {this.state.search.length} request(s)</div>
+                <h3 className="my-4">Search history {this.state.search.length} request(s)</h3>
                 <ul>
                     {connecting ?
                         this.state.search
