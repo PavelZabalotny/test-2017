@@ -10,7 +10,7 @@ class App extends Component {
         super();
 
         this.app = firebase.initializeApp(DB_CONFIG);
-        this.database = this.app.database().ref('search');//.child('search');
+        this.database = this.app.database().ref('search');
 
         this.state = {
             search: []
@@ -38,7 +38,7 @@ class App extends Component {
                 });
             } else {
                 // при удалении последнего элемента из FB, в state будет записываться пустой массив
-                // иначе при удалении последнего элемента из FB, он остается в state  и отображается
+                // иначе при удалении последнего элемента из FB, он остается в state и отображается
                 this.setState({
                     search: []
                 });
@@ -55,7 +55,7 @@ class App extends Component {
                 <SearchForm add={this.handleSubmitSearchString}/>
                 <h3 className="my-4">Search history {this.state.search.length} request(s)</h3>
                 <ul>
-                    {connecting ?
+                    {connecting !== undefined ?
                         this.state.search
                             .sort((a, b) => b.date - a.date)
                             .map(item => {
@@ -67,7 +67,7 @@ class App extends Component {
                                     deleteSearchHistory={this.handleDeleteSearchHistory}
                                 />
                             }) :
-                        'Connecting to Firebase database, please wait ...'}
+                        `Connecting, please wait ... ${console.log(connecting)}`}
                 </ul>
             </div>
         );
