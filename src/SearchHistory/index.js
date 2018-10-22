@@ -15,7 +15,7 @@ export default function SearchHistory({id, date, text, deleteSearchHistory}) {
             </div>
             <div className="col-2 m-auto">
                 <button
-                    className="btn btn-outline-danger btn-sm"
+                    className="btn btn-outline-danger btn-sm float-right"
                     onClick={deleteHistory(id)}>Delete
                 </button>
             </div>
