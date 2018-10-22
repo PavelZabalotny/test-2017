@@ -8,8 +8,6 @@ export default class SearchForm extends React.Component {
 
     render() {
         return (
-            <div>
-
                 <form className="row">
                     <div className="col-3 m-auto">
                         <span className="text align-self-center p-2">I'm looking for</span>
@@ -36,42 +34,19 @@ export default class SearchForm extends React.Component {
                         </div>
                     </div>
                 </form>
-
-                {/*<div className="form-group mb-2">
-                    <label htmlFor="staticEmail2" className="sr-only">I'm looking for!</label>
-                    <input type="text" readOnly className="form-control-plaintext" id=""
-                           value="I'm looking for!"/>
-                </div>
-
-                <div className="mx-sm-3 mb-2">
-                    <label htmlFor="inputPassword2" className="sr-only">Text of my search request</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        id=""
-                        placeholder="Text of my search request"
-                        onChange={this.handleChangeRequest}
-                        value={this.state.text}
-                    />
-                </div>
-                <button
-                    type="submit"
-                    className="btn btn-primary mb-2"
-                    onClick={this.writeRequest}
-                    disabled={this.validate()}
-                >Add search string
-                </button>*/}
-            </div>
         )
     }
 
+    // валидация для поля ввода (не меньше 1 символа и не больше 100)
     validate = () => !(this.state.text.trim().length > 0 && this.state.text.trim().length
         < 101);
 
+    // добавить поисковый запрос
     writeRequest = e => {
-        e.preventDefault(); //отменяет обновление при добавлении поискового запроса
+        e.preventDefault();
         this.props.add(this.state.text);
 
+        //обнуляем состояние после добавления запроса
         this.setState({
             text: '',
         });

@@ -13,11 +13,14 @@ class App extends Component {
         this.database = this.app.database().ref('search');
 
         this.state = {
-            search: []
+            search: [],
+            // необходимо для отображения информационного сообщения о загрузке данных из Базы
+            connecting: false,
         }
     }
 
     componentDidMount() {
+
         this.database.on('value', snap => {
             const items = snap.val();
 
@@ -35,12 +38,18 @@ class App extends Component {
 
                 this.setState({
                     search: prevState,
+                    connecting: true,
                 });
-            } else {
+            } else if(items === null) {
                 // при удалении последнего элемента из FB, в state будет записываться пустой массив
                 // иначе при удалении последнего элемента из FB, он остается в state и отображается
                 this.setState({
-                    search: []
+                    search: [],
+                    connecting: true,
+                });
+            } else {
+                this.setState({
+                    connecting: false,
                 });
             }
         });
@@ -48,14 +57,13 @@ class App extends Component {
     }
 
     render() {
-        const connecting = !!this.state.search.length;
         return (
             <div className='container mt-5'>
                 {/*добавление истории поиска*/}
                 <SearchForm add={this.handleSubmitSearchString}/>
                 <h3 className="my-4">Search history {this.state.search.length} request(s)</h3>
                 <ul>
-                    {connecting !== undefined ?
+                    {this.state.connecting ?
                         this.state.search
                             .sort((a, b) => b.date - a.date)
                             .map(item => {
@@ -67,7 +75,9 @@ class App extends Component {
                                     deleteSearchHistory={this.handleDeleteSearchHistory}
                                 />
                             }) :
-                        `Connecting, please wait ... ${console.log(connecting)}`}
+                        <div className="alert alert-info" role="alert">
+                            Loading, please wait...
+                        </div>}
                 </ul>
             </div>
         );
@@ -75,14 +85,14 @@ class App extends Component {
 
     handleDeleteSearchHistory = (id) => {
         const itemRef = firebase.database().ref(`/search/${id}`);
-        itemRef.remove();
+        itemRef.remove().catch(exception => console.error(`Error: ${exception}`));
     };
 
     handleSubmitSearchString = (text) => {
         this.database.push().set({
             date: this.setHistoryDate(),
             text
-        })
+        }).catch(exception => console.error(`Error: ${exception}`));
     };
 
     setHistoryDate = () => Date.now();

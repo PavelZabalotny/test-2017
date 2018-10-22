@@ -10,7 +10,6 @@ export default function SearchHistory({id, date, text, deleteSearchHistory}) {
     return (
         <li className="row justify-content-md-center border-bottom mb-2 pb-2">
             <div className="col-10">
-                {/*<div>id = {id}</div>*/}
                 <div>{date}</div>
                 <div>{text}</div>
             </div>
